@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/mikevidotto/greeting"
 	"io/ioutil"
 	"log"
 	"net/http"
@@ -30,8 +29,6 @@ var (
 
 // 3. add HandleFuncs and start server listening at localhost.
 func main() {
-	message := greetings.Hello("Michael mothafucking Vidotto")
-	fmt.Println(message)
 
 	http.HandleFunc("/posts", postsHandler)
 	http.HandleFunc("/posts/", postHandler)
@@ -75,15 +72,13 @@ func postHandler(w http.ResponseWriter, r *http.Request) {
 //--------------CRUD OPERATIONS================
 
 func handleGetPosts(w http.ResponseWriter, r *http.Request) {
-	// This is the first time we're using the mutex.
-	// It essentially locks the server so that we can
+	// this essentially locks the server so that we can
 	// manipulate the posts map without worrying about
 	// another request trying to do the same thing at
 	// the same time.
 	postsMu.Lock()
 
-	// I love this feature of go - we can defer the
-	// unlocking until the function has finished executing,
+	// defers unlocking until the function has finished executing,
 	// but define it up the top with our lock. Nice and neat.
 	// Caution: deferred statements are first-in-last-out,
 	// which is not all that intuitive to begin with.
@@ -94,6 +89,8 @@ func handleGetPosts(w http.ResponseWriter, r *http.Request) {
 	for _, p := range posts {
 		ps = append(ps, p)
 	}
+
+	fmt.Println(ps)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(ps)
